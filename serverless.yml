@@ -4,7 +4,7 @@ plugins:
   - serverless-pseudo-parameters
 
 custom:
-  efsAccessPoint: fsap-0a310950628d03f44
+  efsAccessPoint: ${ssm:/efs/accessPoint/id}
   LocalMountPath: /mnt/efs
   efs_pip_path: /lib
 
