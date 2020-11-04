@@ -4,8 +4,12 @@ try:
     import os
     print("Python version")
     print(sys.version)
-    #sys.path.append(os.environ['EFS_PIP_PATH'])  # nopep8 # noqa
-    sys.path.append('/Users/philippschmid/projects/personal/serverless-efs-lambda/efsync/.efsync/lib')  # nopep8 # noqa
+    if 'LOCAL_PIP_PATH_SL' in os.environ:
+        sys.path.append(os.environ['EFS_PIP_PATH'])  # nopep8 # noqa
+    elif 'EFS_PIP_PATH' in os.environ:
+        sys.path.append(os.environ['EFS_PIP_PATH'])  # nopep8 # noqa
+    else:
+        raise 
 except ImportError:
     pass
 

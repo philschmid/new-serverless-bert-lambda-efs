@@ -18,14 +18,16 @@ resources:
             LocalMountPath: /mnt/bigLibs
 ```
 
-# Commands on ec2
+# Local Set up for testing
 
-1. install mount helper `sudo yum install -y amazon-efs-utils`
-2. mount filesystem
-   a. create efs directory `sudo mkdir efs`
-   b. mount efs with file system id `sudo mount -t efs -o tls fs-2226b27a:/ efs`
+**1. install pip packages into local directory**
 
-3) install python `sudo yum install python3 -y`
+```bash
+pip install -r requirements.txt --target ./lib
+```
 
-4. install requirements `sudo pip3 --no-cache-dir install -t efs/lib torch torchvision numpy`
-   -> aktuelles Problem MemoryError aber funktioniert
+**2. set env for path so local packages will be used**
+
+```
+LOCAL_PIP_PATH_SL="$(pwd)/lib"
+```
