@@ -1,0 +1,45 @@
+service: new-serverless-bert-lambda
+
+plugins:
+  - serverless-pseudo-parameters
+
+custom:
+  efsAccessPoint: fsap-0a310950628d03f44
+  LocalMountPath: /mnt/efs
+  efs_pip_path: /lib
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: eu-central-1
+  environment: # Service wide environment variables
+    MNT_DIR: ${self:custom.LocalMountPath}
+    EFS_PIP_PATH: '${self:custom.LocalMountPath}${self:custom.efs_pip_path}'
+  iamManagedPolicies:
+    - arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess
+
+package:
+  exclude:
+    - test/**
+    - terraform/**
+    - node_modules/**
+    - .vscode/**
+    - .serverless/**
+    - .pytest_cache/**
+    - __pychache__/**
+
+functions:
+  predict-Sentiment:
+    handler: handler.handler
+    events:
+      - http:
+          path: test
+          method: get
+
+resources:
+  extensions:
+    PredictDashSentimentLambdaFunction:
+      Properties:
+        FileSystemConfigs:
+          - Arn: 'arn:aws:elasticfilesystem:${self:provider.region}:#{AWS::AccountId}:access-point/${self:custom.efsAccessPoint}'
+            LocalMountPath: '${self:custom.LocalMountPath}'

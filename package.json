@@ -1,0 +1,13 @@
+{
+  "name": "serverless-efs-lambda",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "sls deploy --aws-profile=schueler --stage=dev"
+  },
+  "dependencies": {
+    "serverless": "^1.75.0",
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}
