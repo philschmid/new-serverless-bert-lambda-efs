@@ -5,51 +5,49 @@ try:
     print("Python version")
     print(sys.version)
     if 'LOCAL_PIP_PATH_SL' in os.environ:
-        sys.path.append(os.environ['EFS_PIP_PATH'])  # nopep8 # noqa
+        sys.path.append(os.environ['LOCAL_PIP_PATH_SL'])  # nopep8 # noqa
     elif 'EFS_PIP_PATH' in os.environ:
         sys.path.append(os.environ['EFS_PIP_PATH'])  # nopep8 # noqa
     else:
-        raise 
+        raise Exception("If you are locak set LOCAL_PIP_PATH_SL and if you are in lambda set EFS_PIP_PATH")
 except ImportError:
     pass
 
 import json
-import os
-import pyjokes
-import glob
-from pandas import DataFrame
-from transformers import pipeline, AutoModelForTokenClassification, AutoTokenizer
+from model.model import get_model,get_tokenizer,serverless_pipeline
+
+model = get_model('distilbert-base-cased-distilled-squad')
+tokenizer = get_tokenizer('distilbert-base-cased-distilled-squad')
+question_answering_pipeline = serverless_pipeline(model,tokenizer)
 
 
 def handler(event, context):
-    # model = AutoModelForTokenClassification.from_pretrained(
-    #     "dbmdz/bert-large-cased-finetuned-conll03-english")
-    # tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
-    x = pipeline('ner', model=model, tokenizer=tokenizer)
-    print(x('I Love New York'))
-    data = {'Product': ['Desktop Computer', 'Tablet', 'iPhone', 'Laptop'],
-            'Price': [700, 250, 800, 1200]
-            }
+    try:
+        print(event['body'])
+        # extract body
+        body = json.loads(event['body'])
+        # init pipeline
+        # predict the answer
+        answer = question_answering_pipeline(question=body['question'], context=body['context'])
+        #return
+        return {
+            "statusCode": 200,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
 
-    df = DataFrame(data, columns=['Product', 'Price'])
-
-    body = {
-        "frame": df.to_dict(),
-        "joke": pyjokes.get_joke(language='de')
-    }
-
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
-
-    return response
-
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
+            },
+            "body": json.dumps({'answer': answer})
+        }
+    except Exception as e:
+        print(repr(e))
+        return {
+            "statusCode": 500,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
+            },
+            "body": json.dumps({"error": repr(e)})
+        }

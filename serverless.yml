@@ -21,6 +21,7 @@ provider:
 package:
   exclude:
     - test/**
+    - lib/**
     - terraform/**
     - node_modules/**
     - .vscode/**
@@ -29,17 +30,19 @@ package:
     - __pychache__/**
 
 functions:
-  predict-Sentiment:
+  questionanswering:
     handler: handler.handler
+    fileSystemConfig:
+      localMountPath: ${self:custom.LocalMountPath}
+      arn: 'arn:aws:elasticfilesystem:${self:provider.region}:#{AWS::AccountId}:access-point/${self:custom.efsAccessPoint}'
+    vpc:
+      securityGroupIds:
+        - sg-5018d428
+      subnetIds:
+        - subnet-17f97a7d
+        - subnet-60c6381c
+        - subnet-7e0ac732
     events:
       - http:
-          path: test
-          method: get
-
-resources:
-  extensions:
-    PredictDashSentimentLambdaFunction:
-      Properties:
-        FileSystemConfigs:
-          - Arn: 'arn:aws:elasticfilesystem:${self:provider.region}:#{AWS::AccountId}:access-point/${self:custom.efsAccessPoint}'
-            LocalMountPath: '${self:custom.LocalMountPath}'
+          path: qa
+          method: post
