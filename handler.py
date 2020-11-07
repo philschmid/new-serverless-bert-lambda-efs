@@ -2,8 +2,6 @@
 try:
     import sys
     import os
-    print("Python version")
-    print(sys.version)
     if 'LOCAL_PIP_PATH_SL' in os.environ:
         sys.path.append(os.environ['LOCAL_PIP_PATH_SL'])  # nopep8 # noqa
     elif 'EFS_PIP_PATH' in os.environ:
@@ -14,21 +12,22 @@ except ImportError:
     pass
 
 import json
-from model.model import get_model,get_tokenizer,serverless_pipeline
+from model.model import serverless_pipeline
 
-model = get_model('distilbert-base-cased-distilled-squad')
-tokenizer = get_tokenizer('distilbert-base-cased-distilled-squad')
-question_answering_pipeline = serverless_pipeline(model,tokenizer)
+
+question_answering_pipeline = serverless_pipeline()
 
 
 def handler(event, context):
     try:
         print(event['body'])
         # extract body
+
         body = json.loads(event['body'])
         # init pipeline
         # predict the answer
         answer = question_answering_pipeline(question=body['question'], context=body['context'])
+        print(answer)
         #return
         return {
             "statusCode": 200,

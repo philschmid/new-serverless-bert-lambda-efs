@@ -7,7 +7,6 @@
     "deploy": "sls deploy --aws-profile=schueler --stage=dev"
   },
   "dependencies": {
-    "serverless": "^1.75.0",
     "serverless-pseudo-parameters": "^2.5.0"
   }
 }

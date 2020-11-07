@@ -20,3 +20,9 @@ question_two = "What does the 'B' in BERT stand for?"
 def test_handler():
     test_event1 = {"body": '{"question": "' +question_one +'", "context": "'+context+'"}'}
     res = handler(test_event1, '')
+
+
+
+# lambci test_event1
+
+#  docker run --rm -v "$PWD":/var/task:ro,delegated lambci/lambda:python3.8 handler.handler   '{"question": "Who has the most covid-19 deaths?", "context":"The US has passed the peak on new coronavirus cases,President Donald Trump said and predicted that some states would reopen this month. The US has over 637,000 confirmed Covid-19 cases and over 30,826 deaths, the highest for any country in the world."}'
