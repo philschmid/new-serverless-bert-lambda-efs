@@ -15,10 +15,8 @@ def decode(tokenizer, token):
     return tokenizer.convert_tokens_to_string(answer_tokens)
       
 def serverless_pipeline(model_path='./model/files'):
-  print('before model init')
   tokenizer = AutoTokenizer.from_pretrained(model_path)
   model = AutoModelForQuestionAnswering.from_pretrained(model_path)
-  print('after model init')
   def predict(question, context):
           input_ids, attention_mask = encode(tokenizer,question, context)
           start_scores, end_scores = model(torch.tensor(
